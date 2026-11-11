@@ -25,7 +25,23 @@ class Model:
         :param mese: Mese selezionato (un intero da 1 a 12)
         :return: lista di tuple --> (nome del distributore, media), es. (Distributore A, 1.789)
         """
-        # TODO
+        result=[]
+        for distributore in self._distributori:
+            prezzi=distributore.get_prezzi()
+            prezzi_per_mese = []
+            contatore_mese = 0
+            for prezzo in prezzi:
+                if prezzo.data.month==mese:
+                    prezzi_per_mese.append(prezzo.prezzo_litro)
+                    contatore_mese+=1
+
+
+            somma_prezzi_mese=sum(prezzi_per_mese)
+            prezzo_medio=somma_prezzi_mese/contatore_mese
+
+            result.append((distributore.nome, prezzo_medio))
+
+        return result
 
     def get_sequenza_ottima(self, mese:int):
         """
