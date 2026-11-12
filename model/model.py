@@ -62,11 +62,39 @@ class Model:
 
     def __ricorsione(self, sequenza_parziale, giorno, ultimo_distributore, costo_corrente, prezzi_settimana):
         """ Implementa la ricorsione """
-        # TODO
+        if giorno == 8:
+            if self.__costo_ottimo == -1 or self.__costo_ottimo > costo_corrente:
+                self.__costo_ottimo = costo_corrente
+                self.__sequenza_ottima = list(sequenza_parziale)
+                return
+        else:
+            distributori=self._distributori
+            for distributore in distributori:
+                if distributore==ultimo_distributore or ultimo_distributore is None:
+                    costo_giornata = prezzi_settimana[distributore.id][giorno-1] * 100
+                    sequenza_parziale.append(distributore.id)
+                    self.__ricorsione(sequenza_parziale,giorno+1,distributore,costo_corrente+costo_giornata,prezzi_settimana)
+                    sequenza_parziale.pop()
+                else:
+                    costo_giornata = (prezzi_settimana[distributore.id][giorno-1] * 100) + 5
+                    sequenza_parziale.append(distributore.id)
+                    self.__ricorsione(sequenza_parziale, giorno + 1, distributore, costo_corrente+costo_giornata, prezzi_settimana)
+                    sequenza_parziale.pop()
 
     def __get_prezzi_prima_settimana_mese(self, mese: int):
         """
         Restituisce i prezzi dei primi 7 giorni del mese selezionato per ciascun distributore.
         :return: un dizionario: {id_distributore: [prezzo_giorno1, ..., prezzo_giorno7]}
         """
-        # TODO
+        dizionario_settimana = {}
+        for distributore in self._distributori:
+            prezzi = distributore.get_prezzi()
+            prezzi_per_mese = []
+            for prezzo in prezzi:
+                if prezzo.data.month == mese:
+                    prezzi_per_mese.append(prezzo.prezzo_litro)
+
+            prezzi_settimana=prezzi_per_mese[:7]
+            dizionario_settimana[distributore.id] = prezzi_settimana
+
+        return dizionario_settimana
